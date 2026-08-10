@@ -1,142 +1,1261 @@
 {
-  "_comment": "v3.5.7.2 cleanup: dropped 20+ probes from PILOT/SEP3 ADAPT/CONF dispatch chain (no longer relevant after v3.5.7+ minimal config). Kept only active patch witnesses + IMA + state + fuel core. Mirror of tools/ecu_logger.py — keep both in sync per memory reference_dual_logger_profile.",
+  "_comment": "v4.1 2026-08-10: merged the probe set that had accumulated in the ECU research repo (EGR-restore acceptance block, smoke-limiter witnesses, boost-demand chain). That copy had drifted: newer probes but the older pre-rename schema. This file is the single source of truth; the copy has been retired. Boost-demand probes carry mul=0.09765625 (2^-10 bar per count) so they compare directly against MAP in kPa. v3.5.7.2 cleanup: dropped 20+ probes from PILOT/SEP3 ADAPT/CONF dispatch chain (no longer relevant after v3.5.7+ minimal config). Kept only active patch witnesses + IMA + state + fuel core. Mirror of tools/ecu_logger.py — keep both in sync per memory reference_dual_logger_profile.",
   "_runtime_comment": "udsBatchMax 3 = the most DIDs that still fit a single-frame request (1 SID + 3x2 bytes = 7). If the ECU rejects a batch (NRC 0x13/0x31 or NO DATA) the scheduler demotes that group to one request per command for the rest of the session, so this is safe to leave on.",
   "runtime": {
-    "udsBatchMax": 3,
+    "udsBatchMax": 1,
     "obdBatchMax": 6
   },
   "extendedSessions": [
-    { "id": "extended_3", "enterRequest": "1003", "exitRequest": "1001" }
+    {
+      "id": "extended_3",
+      "enterRequest": "1003",
+      "exitRequest": "1001"
+    }
   ],
   "readModes": [
     {
       "id": "kuga_ext",
       "inputRequest": "2703",
       "tokenRequest": "2704",
-      "algorithm": { "steps": [{ "op": "constant", "value": "000000" }] }
+      "algorithm": {
+        "steps": [
+          {
+            "op": "constant",
+            "value": "000000"
+          }
+        ]
+      }
     }
   ],
   "ramReads": [
     {
       "id": "PILOT_CHAIN",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "400080AC", "size": 6,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.2,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400080AC",
+      "size": 6,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.2,
       "signals": [
-        { "id": "KUGA_MAIN_PULSE",  "path": "Engine", "name": "Main injection pulse",
-          "fmt": { "len": 16, "bix": 0,  "sign": true, "mul": 0.0625, "unit": "milligramsPerStroke" } },
-        { "id": "KUGA_PILOT1_MASS", "path": "Engine", "name": "Pilot1 injection mass",
-          "fmt": { "len": 16, "bix": 32, "sign": true, "mul": 0.0625, "unit": "milligramsPerStroke" } }
+        {
+          "id": "KUGA_MAIN_PULSE",
+          "path": "Engine",
+          "name": "Main injection pulse",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "milligramsPerStroke"
+          }
+        },
+        {
+          "id": "KUGA_PILOT1_MASS",
+          "path": "Engine",
+          "name": "Pilot1 injection mass",
+          "fmt": {
+            "len": 16,
+            "bix": 32,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "milligramsPerStroke"
+          }
+        }
       ]
     },
     {
       "id": "R3_VGT_SMOOTHED",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40016760", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40016760",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_R3_VGT_SMOOTHED", "path": "Engine", "name": "VGT post-smoother demand (R3.1 active patch witness — restored v3.5.7)",
-          "fmt": { "len": 16, "sign": true, "unit": "scalar" } }
+        {
+          "id": "KUGA_R3_VGT_SMOOTHED",
+          "path": "Engine",
+          "name": "VGT post-smoother demand (R3.1 active patch witness — restored v3.5.7)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
       ]
     },
     {
       "id": "R3_2_MAIN_DEMAND",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "4000B712", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.2,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B712",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.2,
       "signals": [
-        { "id": "KUGA_R3_2_MAIN_DEMAND", "path": "Engine", "name": "ITD_MAIN_NOM1 lookup output (R3.2 active patch witness)",
-          "fmt": { "len": 16, "sign": true, "mul": 0.0625, "unit": "scalar" } }
-      ]
+        {
+          "id": "KUGA_R3_2_MAIN_DEMAND",
+          "path": "Engine",
+          "name": "ITD_MAIN_NOM1 lookup output (R3.2 active patch witness)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "scalar"
+          }
+        }
+      ],
+      "_comment": "Kept for the app, but the name is disputed: the Windows logger dropped this probe in v3.5.10 as misnamed (it reads RPD, not ITD). Verify before relying on it."
     },
     {
       "id": "R1_FQD_DEMAND",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40016BAE", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40016BAE",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_R1_FQD_DEMAND", "path": "Engine", "name": "FQD_MAIN_STRT lookup output (R1.1 cold-start fuel patch witness)",
-          "fmt": { "len": 16, "sign": true, "unit": "scalar" } }
-      ]
+        {
+          "id": "KUGA_R1_FQD_DEMAND",
+          "path": "Engine",
+          "name": "FQD_MAIN_STRT lookup output (R1.1 cold-start fuel patch witness)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
+      ],
+      "_comment": "Valid probe, currently unused by the Windows logger (cold-start scope deferred v3.5.14)."
     },
     {
       "id": "R1_ITD_DEMAND",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "4000C12C", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000C12C",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_R1_ITD_DEMAND", "path": "Engine", "name": "ITD_MAIN_STRT lookup output (R1.2 cold-start timing patch witness)",
-          "fmt": { "len": 16, "sign": true, "unit": "scalar" } }
-      ]
+        {
+          "id": "KUGA_R1_ITD_DEMAND",
+          "path": "Engine",
+          "name": "ITD_MAIN_STRT lookup output (R1.2 cold-start timing patch witness)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
+      ],
+      "_comment": "Valid probe, currently unused by the Windows logger (cold-start scope deferred v3.5.14)."
     },
     {
       "id": "CONF_SEL",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "400088F7", "size": 1,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 1.0,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400088F7",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
       "signals": [
-        { "id": "KUGA_CONF_SEL", "path": "Engine", "name": "Active CONF selector (1-4)",
-          "fmt": { "len": 8, "unit": "scalar" } }
+        {
+          "id": "KUGA_CONF_SEL",
+          "path": "Engine",
+          "name": "Active CONF selector (1-4)",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
       ]
     },
     {
       "id": "IDLE_RPM_TGT",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40017E6E", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40017E6E",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_IDLE_RPM_TGT", "path": "Engine", "name": "Idle RPM target",
-          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+        {
+          "id": "KUGA_IDLE_RPM_TGT",
+          "path": "Engine",
+          "name": "Idle RPM target",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "min": -200,
+            "max": 200,
+            "div": 64,
+            "unit": "rpm"
+          }
+        }
       ]
     },
     {
       "id": "GEAR_ENGAGED",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40007192", "size": 1,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40007192",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_GEAR_ENGAGED", "path": "Transmission", "name": "Gear engaged (IntA gate input)",
-          "fmt": { "len": 8, "unit": "scalar" } }
+        {
+          "id": "KUGA_GEAR_ENGAGED",
+          "path": "Transmission",
+          "name": "Gear engaged (IntA gate input)",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
       ]
     },
     {
       "id": "INJ_BAL_C1",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40009CC4", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40009CC4",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_INJ_BAL_C1", "path": "Engine", "name": "Per-cyl injection balance, Cyl1 = FP7A body (firing pos 0)",
-          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+        {
+          "id": "KUGA_INJ_BAL_C1",
+          "path": "Engine",
+          "name": "Per-cyl injection balance, Cyl1 = FP7A body (firing pos 0)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "min": -200,
+            "max": 200,
+            "div": 64,
+            "unit": "rpm"
+          }
+        }
       ]
     },
     {
       "id": "INJ_BAL_C3",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40009CC6", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40009CC6",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_INJ_BAL_C3", "path": "Engine", "name": "Per-cyl injection balance, Cyl3 = 0P12 body (firing pos 1)",
-          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+        {
+          "id": "KUGA_INJ_BAL_C3",
+          "path": "Engine",
+          "name": "Per-cyl injection balance, Cyl3 = 0P12 body (firing pos 1)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "min": -200,
+            "max": 200,
+            "div": 64,
+            "unit": "rpm"
+          }
+        }
       ]
     },
     {
       "id": "INJ_BAL_C4",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40009CC8", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40009CC8",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_INJ_BAL_C4", "path": "Engine", "name": "Per-cyl injection balance, Cyl4 = 9732 body (firing pos 2; α-mapping post swap-2-4 2026-05-01)",
-          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+        {
+          "id": "KUGA_INJ_BAL_C4",
+          "path": "Engine",
+          "name": "Per-cyl injection balance, Cyl4 = 9732 body (firing pos 2; α-mapping post swap-2-4 2026-05-01)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "min": -200,
+            "max": 200,
+            "div": 64,
+            "unit": "rpm"
+          }
+        }
       ]
     },
     {
       "id": "INJ_BAL_C2",
-      "hdr": "7E0", "rax": "7E8",
-      "address": "40009CCA", "size": 2,
-      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40009CCA",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
       "signals": [
-        { "id": "KUGA_INJ_BAL_C2", "path": "Engine", "name": "Per-cyl injection balance, Cyl2 = K77A body (firing pos 3; α-mapping post swap-2-4 2026-05-01)",
-          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+        {
+          "id": "KUGA_INJ_BAL_C2",
+          "path": "Engine",
+          "name": "Per-cyl injection balance, Cyl2 = K77A body (firing pos 3; α-mapping post swap-2-4 2026-05-01)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "min": -200,
+            "max": 200,
+            "div": 64,
+            "unit": "rpm"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "v3.5.8 anti-EGR SEL_COR lock verification probes — must mirror tools/ecu_logger.py RAM_READS additions. Reference: project_egr_unit_chain_resolved.md.",
+      "id": "NOM1_BLEND_IDX",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400158B8",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_NOM1_BLEND_IDX",
+          "path": "Engine.EGR",
+          "name": "EGR demand SEL_COR blend output (Q4.4 byte; expect 0x10 in cruise post-v3.5.8 lock)",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "EGR_PWM_DUTY",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40012D54",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
+      "signals": [
+        {
+          "id": "KUGA_EGR_PWM_DUTY",
+          "path": "Engine.EGR",
+          "name": "EGR PWM duty pre-register (chain stage 6; expect near-zero post-v3.5.8 since BAS >= NA)",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "EGR_ACTUATOR_CMD",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015B66",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 0.5,
+      "signals": [
+        {
+          "id": "KUGA_EGR_ACTUATOR_CMD",
+          "path": "Engine.EGR",
+          "name": "EGR actuator command pre-PWM (chain stage 5)",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "v3.5.11+ FRPD writer chain diagnostic probes — Ghidra-traced 2026-05-06. Goal: identify где 0.2 Hz idle hunting originates в FRPD cascade FUN_0010ca98/cd84/cb7c.",
+      "id": "FRPD_FINAL",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B690",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_FRPD_FINAL",
+          "path": "Fuel",
+          "name": "FRPD final (output FUN_0010ca98 — what OBD publishes)",
+          "fmt": {
+            "len": 16,
+            "mul": 10,
+            "unit": "kilopascals"
+          }
+        }
+      ]
+    },
+    {
+      "id": "FRPD_PRE_CLAMP",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B692",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_FRPD_PRE_CLAMP",
+          "path": "Fuel",
+          "name": "FRPD pre-clamp (output FUN_0010cd84)",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "FRPD_MODE_BLEND",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B770",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_FRPD_MODE_BLEND",
+          "path": "Fuel",
+          "name": "Mode-blended FRPD demand (output FUN_0010cb7c — most upstream FRPD chain)",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "FRPD_MODE_IDX",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B6F3",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_FRPD_MODE_IDX",
+          "path": "Engine",
+          "name": "Combustion mode index (NOM1=1; check for mode bouncing at idle)",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "FRPD_NOM1_VAR",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B744",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_FRPD_NOM1_VAR",
+          "path": "Fuel",
+          "name": "NOM1 demand variant input (per-mode FRPD contributor)",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "v3.5.11+ AMF demand pipeline diagnostic for 'demand vs MAF mismatch' hypothesis. AMF_DEMAND_FINAL ×0.125 = mg/str. Compare к sensor MAF (~510 mg/str at idle).",
+      "id": "AMF_DEMAND_FINAL",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400157AC",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_AMF_DEMAND_FINAL",
+          "path": "Engine.EGR",
+          "name": "AMF demand post-blend final (×0.125 = mg/str; expect ~558 idle NOM1_MSTR1)",
+          "fmt": {
+            "len": 16,
+            "mul": 0.125,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "AMF_MEASURED",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000D13E",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_AMF_MEASURED",
+          "path": "Engine.EGR",
+          "name": "ECU measured AMF (computed from MAF + EGR estimate; expect ~510 idle на our car)",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "v3.5.16 VGT dispatch + fault + AMF chain probes (Ghidra-verified 2026-05-07). DISPATCH_MODE confirms which surface family is read; mode flips → step changes → бубубу hypothesis.",
+      "id": "DISPATCH_MODE",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001672F",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_DISPATCH_MODE",
+          "path": "Engine.VGT",
+          "name": "VGT mode 1-10 (1=NOM1_MSTR1, 6=alt-family, A=full-open hardcoded)",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DRIVE_MODE_BYTE",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40017B3B",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_DRIVE_MODE_BYTE",
+          "path": "Engine.VGT",
+          "name": "X-axis input to dispatch LUT 0x002307F4 (drive_mode 1-15)",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "AMF_MODE_SEL",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015213",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_AMF_MODE_SEL",
+          "path": "Engine.EGR",
+          "name": "FUN_00144A60 cVar3: 0=raw HFM at 0xD184, 2=model product",
+          "fmt": {
+            "len": 8,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VGT_FAULT_W1",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40014FDE",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_VGT_FAULT_W1",
+          "path": "Engine.VGT",
+          "name": "*0x001C44AC FoMoCo OBD flag word; bit 0x800 = confirmed fault → safe-open",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VGT_FAULT_W2",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40014FE0",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_VGT_FAULT_W2",
+          "path": "Engine.VGT",
+          "name": "*0x001C44C0 FoMoCo OBD flag word; bit 0x800 = confirmed fault → safe-open",
+          "fmt": {
+            "len": 16,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "PATM_TRIM_BIAS",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001590C",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_PATM_TRIM_BIAS",
+          "path": "Engine.EGR",
+          "name": "FUN_0006731C bias output; A2_patm_sl_zero witness (~0 expected post-patch)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VGT_PRECLAMP",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400166AE",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_VGT_PRECLAMP",
+          "path": "Engine.VGT",
+          "name": "Post-mode-blend, pre-final-clamp VGT_DMND [v4.1: verified BOOST PRESSURE, 2^-10 bar/count -> kPa, compare directly against MAP]",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "mul": 0.09765625,
+            "unit": "kilopascals"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VGT_RAW_SURFACE",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400166B4",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_VGT_RAW_SURFACE",
+          "path": "Engine.VGT",
+          "name": "Raw selected surface output (pre-bias-add, pre-slew). Step changes signal mode flip. [v4.1: verified BOOST PRESSURE, 2^-10 bar/count -> kPa, compare directly against MAP]",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "mul": 0.09765625,
+            "unit": "kilopascals"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "v4.0 EGR acceptance: AMF loop error = demand - measured. POSITIVE + CLAMP_LO=1 means the MAF under-reads and the loop is shutting the valve.",
+      "id": "AMF_ERR",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015662",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_AMF_ERR",
+          "path": "Engine.EGR",
+          "name": "AMF loop error (demand-measured)",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.125,
+            "unit": "milligramsPerStroke"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "PI output of the AMF loop (fed -AMF_ERR), Q7 scale 12800=100%.",
+      "id": "AMF_PI_OUT",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001571A",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_AMF_PI_OUT",
+          "path": "Engine.EGR",
+          "name": "AMF PI output",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0078125,
+            "unit": "percent"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Feedforward EGR position before PI, 1600=100%.",
+      "id": "EGR_CMD_FF",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001596C",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_CMD_FF",
+          "path": "Engine.EGR",
+          "name": "EGR feedforward position",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "percent"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "AMF-loop output = FF + PI>>3, clamped. Same 1600=100% scale as EGR_POS_MEAS, so the two compare 1:1 - cheapest valve-fault test.",
+      "id": "EGR_CMD",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001565C",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_CMD",
+          "path": "Engine.EGR",
+          "name": "EGR commanded position",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "percent"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Closed-loop window + clamp flags (FUN_00066098).",
+      "id": "EGR_CL_STATE",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001572E",
+      "size": 3,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_CL_ACTIVE",
+          "path": "Engine.EGR",
+          "name": "EGR closed-loop active",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        },
+        {
+          "id": "KUGA_EGR_CLAMP_HI",
+          "path": "Engine.EGR",
+          "name": "EGR clamp high",
+          "fmt": {
+            "len": 8,
+            "bix": 8,
+            "sign": false,
+            "unit": "scalar"
+          }
+        },
+        {
+          "id": "KUGA_EGR_CLAMP_LO",
+          "path": "Engine.EGR",
+          "name": "EGR clamp low",
+          "fmt": {
+            "len": 8,
+            "bix": 16,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Measured valve position, 1600=100%. TRAP: a faulted sensor is substituted with 1440 (=90%) - rock-steady 1440 means sensor dead, not valve open.",
+      "id": "EGR_POS_MEAS",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000D57C",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_POS_MEAS",
+          "path": "Engine.EGR",
+          "name": "EGR measured position",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "percent"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Position target, Q7 12800=100%.",
+      "id": "EGR_POS_TGT",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015D94",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_POS_TGT",
+          "path": "Engine.EGR",
+          "name": "EGR position target",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0078125,
+            "unit": "percent"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "target - 8x measured. Big and steady = valve or harness fault.",
+      "id": "EGR_POS_ERR",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015B60",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_POS_ERR",
+          "path": "Engine.EGR",
+          "name": "EGR position error",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0078125,
+            "unit": "percent"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "EGR master enable flag. A confirmed EGR DTC drops it and EGR stops entirely.",
+      "id": "EGR_MASTER",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015938",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_MASTER",
+          "path": "Engine.EGR",
+          "name": "EGR master enable",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Torque input to the EGR gate (FUN_00068D6C) = max(0x4000C030, 0x400180EC).",
+      "id": "TQ_GATE_IN",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001593C",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_TQ_GATE_IN",
+          "path": "Engine.EGR",
+          "name": "EGR torque gate input",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "newtonMeters"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "EGR allowed only inside LO < torque <= HI. v4.1 lowered HI to 105/135/165/200 Nm at 1000/1250/1500/1750 rpm; disable fires at HI+10, re-enable at HI.",
+      "id": "TQ_GATE_OK",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "40015941",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_TQ_GATE_OK",
+          "path": "Engine.EGR",
+          "name": "EGR torque window OK",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "1 = an EGR fault killed the master flag.",
+      "id": "EGR_FAULT_AGG",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000B304",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_FAULT_AGG",
+          "path": "Engine.EGR",
+          "name": "EGR fault aggregate",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Expect {1,2,3}. 6 = RGN (saturated, valve shut).",
+      "id": "EGR_MODE_IDX",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400158E3",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_MODE_IDX",
+          "path": "Engine.EGR",
+          "name": "EGR mode index",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "EGR end-stop learner validity (FUN_0006D830). LOW->1 after the valve is fitted.",
+      "id": "EGR_LEARN_VALID",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4001D4CF",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_EGR_LEARN_VAL_HI",
+          "path": "Engine.EGR",
+          "name": "EGR learn valid HI",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        },
+        {
+          "id": "KUGA_EGR_LEARN_VAL_LO",
+          "path": "Engine.EGR",
+          "name": "EGR learn valid LOW",
+          "fmt": {
+            "len": 8,
+            "bix": 8,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "HFM fault fallback + raw mg/str before the loop filter. HFM_FAULT_MODEL=1 means the ECU fell back to speed-density and the log is invalid for AMF work.",
+      "id": "MAF_INTEGRITY",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000D19C",
+      "size": 6,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_HFM_FAULT_MODEL",
+          "path": "Engine",
+          "name": "HFM fault - speed-density fallback",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        },
+        {
+          "id": "KUGA_MAF_MGSTR_RAW",
+          "path": "Engine",
+          "name": "MAF mg/str pre-filter (raw counts)",
+          "fmt": {
+            "len": 16,
+            "bix": 32,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Rawest HFM view. Hard-clamped to [512,3072] and pre-averaged - a DEAD MAF reads 512, never 0.",
+      "id": "MAF_RAW_IN",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000D426",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_MAF_RAW_IN",
+          "path": "Engine",
+          "name": "MAF raw input (counts)",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Smoke limiter output. SUM = after corrections and clamp; MAP = raw map output. Acceptance: compare INDIC_TQ against SMOKE_TQ_MAP during tip-in - if torque sits exactly on it, the limiter is what the driver feels.",
+      "id": "SMOKE_TQ",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000C368",
+      "size": 6,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_SMOKE_TQ_SUM",
+          "path": "Engine",
+          "name": "Smoke torque after corrections",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "newtonMeters"
+          }
+        },
+        {
+          "id": "KUGA_SMOKE_TQ_MAP",
+          "path": "Engine",
+          "name": "Smoke torque raw map output",
+          "fmt": {
+            "len": 16,
+            "bix": 32,
+            "sign": true,
+            "mul": 0.0625,
+            "unit": "newtonMeters"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "X input actually used by the smoke map (raw counts - scale not verified).",
+      "id": "SMOKE_X_RPM",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000C36E",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_SMOKE_X_RPM",
+          "path": "Engine",
+          "name": "Smoke map X input (raw)",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "Y input = FRESH air mg/str.",
+      "id": "SMOKE_Y_AIR",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000C3DA",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_SMOKE_Y_AIR",
+          "path": "Engine",
+          "name": "Smoke map Y input - fresh air",
+          "fmt": {
+            "len": 16,
+            "bix": 0,
+            "sign": true,
+            "mul": 0.125,
+            "unit": "milligramsPerStroke"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "1 = the pair is blended to a flat 250 Nm, i.e. the shaped map is out of the picture and the whole S/S2 patch line is irrelevant.",
+      "id": "SMOKE_STA_FLAG",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "4000C3EE",
+      "size": 1,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_SMOKE_STA_FLAG",
+          "path": "Engine",
+          "name": "Smoke flat-250 branch active",
+          "fmt": {
+            "len": 8,
+            "bix": 0,
+            "sign": false,
+            "unit": "scalar"
+          }
+        }
       ]
     }
   ],
@@ -177,7 +1296,8 @@
       "id": "DCM35_FUEL_INJECTION_AREA",
       "label": "Fuel injection control block (~256 bytes)",
       "description": "Pilot/main pulse, fuel demand, trim outputs near 0x400080A0..0x400089B8",
-      "hdr": "7E0", "rax": "7E8",
+      "hdr": "7E0",
+      "rax": "7E8",
       "startAddress": "40008000",
       "length": 1024,
       "chunkSize": 6,
@@ -190,7 +1310,8 @@
       "id": "DCM35_FULL_PCM_RAM",
       "label": "Full PCM RAM 64KB snapshot",
       "description": "Wide RAM scan from 0x40003000 (skips bottom 12KB peripheral block). Most addresses unmapped — expect ~90% dead bytes (0xFF) in output.",
-      "hdr": "7E0", "rax": "7E8",
+      "hdr": "7E0",
+      "rax": "7E8",
       "startAddress": "40003000",
       "length": 65536,
       "chunkSize": 6,
