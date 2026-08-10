@@ -1,0 +1,203 @@
+{
+  "_comment": "v3.5.7.2 cleanup: dropped 20+ probes from PILOT/SEP3 ADAPT/CONF dispatch chain (no longer relevant after v3.5.7+ minimal config). Kept only active patch witnesses + IMA + state + fuel core. Mirror of tools/ecu_logger.py — keep both in sync per memory reference_dual_logger_profile.",
+  "_runtime_comment": "udsBatchMax 3 = the most DIDs that still fit a single-frame request (1 SID + 3x2 bytes = 7). If the ECU rejects a batch (NRC 0x13/0x31 or NO DATA) the scheduler demotes that group to one request per command for the rest of the session, so this is safe to leave on.",
+  "runtime": {
+    "udsBatchMax": 3,
+    "obdBatchMax": 6
+  },
+  "extendedSessions": [
+    { "id": "extended_3", "enterRequest": "1003", "exitRequest": "1001" }
+  ],
+  "readModes": [
+    {
+      "id": "kuga_ext",
+      "inputRequest": "2703",
+      "tokenRequest": "2704",
+      "algorithm": { "steps": [{ "op": "constant", "value": "000000" }] }
+    }
+  ],
+  "ramReads": [
+    {
+      "id": "PILOT_CHAIN",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "400080AC", "size": 6,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.2,
+      "signals": [
+        { "id": "KUGA_MAIN_PULSE",  "path": "Engine", "name": "Main injection pulse",
+          "fmt": { "len": 16, "bix": 0,  "sign": true, "mul": 0.0625, "unit": "milligramsPerStroke" } },
+        { "id": "KUGA_PILOT1_MASS", "path": "Engine", "name": "Pilot1 injection mass",
+          "fmt": { "len": 16, "bix": 32, "sign": true, "mul": 0.0625, "unit": "milligramsPerStroke" } }
+      ]
+    },
+    {
+      "id": "R3_VGT_SMOOTHED",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40016760", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_R3_VGT_SMOOTHED", "path": "Engine", "name": "VGT post-smoother demand (R3.1 active patch witness — restored v3.5.7)",
+          "fmt": { "len": 16, "sign": true, "unit": "scalar" } }
+      ]
+    },
+    {
+      "id": "R3_2_MAIN_DEMAND",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "4000B712", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.2,
+      "signals": [
+        { "id": "KUGA_R3_2_MAIN_DEMAND", "path": "Engine", "name": "ITD_MAIN_NOM1 lookup output (R3.2 active patch witness)",
+          "fmt": { "len": 16, "sign": true, "mul": 0.0625, "unit": "scalar" } }
+      ]
+    },
+    {
+      "id": "R1_FQD_DEMAND",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40016BAE", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_R1_FQD_DEMAND", "path": "Engine", "name": "FQD_MAIN_STRT lookup output (R1.1 cold-start fuel patch witness)",
+          "fmt": { "len": 16, "sign": true, "unit": "scalar" } }
+      ]
+    },
+    {
+      "id": "R1_ITD_DEMAND",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "4000C12C", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_R1_ITD_DEMAND", "path": "Engine", "name": "ITD_MAIN_STRT lookup output (R1.2 cold-start timing patch witness)",
+          "fmt": { "len": 16, "sign": true, "unit": "scalar" } }
+      ]
+    },
+    {
+      "id": "CONF_SEL",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "400088F7", "size": 1,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 1.0,
+      "signals": [
+        { "id": "KUGA_CONF_SEL", "path": "Engine", "name": "Active CONF selector (1-4)",
+          "fmt": { "len": 8, "unit": "scalar" } }
+      ]
+    },
+    {
+      "id": "IDLE_RPM_TGT",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40017E6E", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_IDLE_RPM_TGT", "path": "Engine", "name": "Idle RPM target",
+          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+      ]
+    },
+    {
+      "id": "GEAR_ENGAGED",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40007192", "size": 1,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_GEAR_ENGAGED", "path": "Transmission", "name": "Gear engaged (IntA gate input)",
+          "fmt": { "len": 8, "unit": "scalar" } }
+      ]
+    },
+    {
+      "id": "INJ_BAL_C1",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40009CC4", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_INJ_BAL_C1", "path": "Engine", "name": "Per-cyl injection balance, Cyl1 = FP7A body (firing pos 0)",
+          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+      ]
+    },
+    {
+      "id": "INJ_BAL_C3",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40009CC6", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_INJ_BAL_C3", "path": "Engine", "name": "Per-cyl injection balance, Cyl3 = 0P12 body (firing pos 1)",
+          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+      ]
+    },
+    {
+      "id": "INJ_BAL_C4",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40009CC8", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_INJ_BAL_C4", "path": "Engine", "name": "Per-cyl injection balance, Cyl4 = 9732 body (firing pos 2; α-mapping post swap-2-4 2026-05-01)",
+          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+      ]
+    },
+    {
+      "id": "INJ_BAL_C2",
+      "hdr": "7E0", "rax": "7E8",
+      "address": "40009CCA", "size": 2,
+      "session": "extended_3", "mode": "kuga_ext", "freq": 0.5,
+      "signals": [
+        { "id": "KUGA_INJ_BAL_C2", "path": "Engine", "name": "Per-cyl injection balance, Cyl2 = K77A body (firing pos 3; α-mapping post swap-2-4 2026-05-01)",
+          "fmt": { "len": 16, "sign": true, "min": -200, "max": 200, "div": 64, "unit": "rpm" } }
+      ]
+    }
+  ],
+  "_dropped_v3.5.7.2": {
+    "PILOT_chain_probes": [
+      "PRE_PULSE (always near 0)",
+      "FUEL_QTY_FINAL (derivable from MAIN+PILOT)",
+      "MAIN1_TIM (CONF=4 hardwired off)",
+      "PILOT1_TIM (no PILOT patches in v3.5.7+, drifts to stock)",
+      "PILOT_TIM_GATE (PILOT chain abandoned)",
+      "BAS_BLEND_C1/C2/C3, BAS_BLEND_RES_C1, DISP_PARAM5, DISP_PILOT1_OUT",
+      "BAS_X_IN, BAS_Y_IN, AUX_X_IN, AUX_Y_IN",
+      "CONF_BIN1..5, CONF_BIN1_PREV, CONF_BIN_CUR, CONF_BIN_SEL, CONF_BIN_LATCH",
+      "PILOT1_PATH (stuck=1 ROM byte)",
+      "INDIC_TQ_DEMAND (quantizer broken/saturated)",
+      "INDIC_TQ_DEM_BIN (gap in quantizer states)"
+    ],
+    "ADAPT_pipeline_probes": [
+      "ADAPT_MODE (pipeline abandoned, INHIBIT_D64=1 always)",
+      "INJ_QTY_LD_AC, TORQUE_DEM, RAILP_FB",
+      "GATE_CCC, LEARN_ACTIVE, LEARN_PHASE, INHIBIT_D64",
+      "ADAPT_C1..C4"
+    ],
+    "R3_2_parallel_zones": [
+      "R3_MAIN_NOM0/2/3 (R3.2 verified via NOM1 alone, parallel zones unnecessary)"
+    ],
+    "R6_pilot_mass": [
+      "R6_PILOT_MASS_C1 (R6.6 dropped from patches v3.5.7)"
+    ],
+    "DID_redundant": [
+      "ECT_DID, MAFHZ, MAF_DID (duplicates of OBD)",
+      "WRAF_PI_mA (sensor diagnostic, not combustion signal)",
+      "INJBAL_ALT1/2/3 + INJBAL_C1..C4 (DID-filtered, RAM raw INJ_BAL_C* covers all 4 directly)"
+    ]
+  },
+  "memoryRegions": [
+    {
+      "id": "DCM35_FUEL_INJECTION_AREA",
+      "label": "Fuel injection control block (~256 bytes)",
+      "description": "Pilot/main pulse, fuel demand, trim outputs near 0x400080A0..0x400089B8",
+      "hdr": "7E0", "rax": "7E8",
+      "startAddress": "40008000",
+      "length": 1024,
+      "chunkSize": 6,
+      "fallbackChunkSize": 2,
+      "addressLength": 4,
+      "session": "extended_3",
+      "mode": "kuga_ext"
+    },
+    {
+      "id": "DCM35_FULL_PCM_RAM",
+      "label": "Full PCM RAM 64KB snapshot",
+      "description": "Wide RAM scan from 0x40003000 (skips bottom 12KB peripheral block). Most addresses unmapped — expect ~90% dead bytes (0xFF) in output.",
+      "hdr": "7E0", "rax": "7E8",
+      "startAddress": "40003000",
+      "length": 65536,
+      "chunkSize": 6,
+      "fallbackChunkSize": 2,
+      "addressLength": 4,
+      "session": "extended_3",
+      "mode": "kuga_ext"
+    }
+  ]
+}

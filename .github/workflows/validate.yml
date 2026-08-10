@@ -1,0 +1,22 @@
+name: Validate profiles
+
+# A broken profile published here reaches a phone that may have no connectivity
+# to recover. Catch it at push time instead.
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Parses every profile and compares the recomputed index against the
+      # committed one, so a stale manifest cannot be published.
+      - name: Manifest is current and every profile parses
+        run: python tools/build_manifest.py --check

@@ -1,0 +1,26 @@
+{
+  "manifestVersion": 1,
+  "profiles": [
+    {
+      "id": "ford-kuga-dcm35",
+      "label": "Ford Kuga (DCM3.5 diesel)",
+      "signalsetVersion": "v3",
+      "minAppSchema": 1,
+      "revision": "4d4f39d6e728",
+      "files": [
+        {
+          "role": "base",
+          "path": "cars/Ford-Kuga/signalsets/v3/default.json",
+          "bytes": 5313,
+          "sha256": "d7052d0493c6be4508e2a4901efb5c2d015794e0833f1e7497b49c2952ae24c3"
+        },
+        {
+          "role": "extensions",
+          "path": "cars/Ford-Kuga/signalsets/v3/extensions.json",
+          "bytes": 8335,
+          "sha256": "bc3be7c81b8b344cdbd2e1bdeb470eff023fde2557e58873b322be7c6d72dbb0"
+        }
+      ]
+    }
+  ]
+}

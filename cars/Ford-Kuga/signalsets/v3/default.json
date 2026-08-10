@@ -1,0 +1,68 @@
+{ "_comment": "v3.5.7.2 cleanup 2026-05-01: dropped ECT_DID/MAFHZ/ECU_STATUS_FLAGS/MAF_DID/O2S11_CUR_mA/INJ_BAL_ALT*/INJ_BAL_CANON_C* — duplicates or DID-filtered redundancy. Mirror of tools/ecu_logger.py FORD_DIDS + OBD_PIDS. INJ_BAL covered via RAM raw in extensions.json.",
+  "commands": [
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "F40D"}, "freq": 0.5,
+  "signals": [
+    {"id": "KUGA_CET_NM", "path": "Engine", "fmt": { "len": 8, "max": 255, "unit": "newtonMeters" }, "name": "Commanded engine torque", "description": "Engine torque the ECU is requesting. Handler reads u16 at 0x40008F42 and emits (u16 >> 7); byte directly equals Nm (0..255 Nm)."}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "F423"}, "freq": 0.5,
+  "signals": [
+    {"id": "KUGA_FRP", "path": "Fuel", "fmt": { "len": 16, "max": 250000, "mul": 10, "unit": "kilopascals" }, "name": "Fuel rail pressure", "description": "Common-rail pressure in kPa. Handler: u16 = clamp(raw_i16, 0, 2500) * 10."}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "F442"}, "freq": 1,
+  "signals": [
+    {"id": "KUGA_BAT_V", "path": "Battery", "fmt": { "len": 16, "max": 65.535, "div": 1000, "unit": "volts" }, "name": "Starter battery voltage", "suggestedMetric": "starterBatteryVoltage"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "0C"}, "freq": 0.1,
+  "signals": [
+    {"id": "RPM", "path": "Engine.Generic", "fmt": { "len": 16, "max": 16383.75, "div": 4, "unit": "rpm" }, "name": "Engine RPM"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "05"}, "freq": 0.5,
+  "signals": [
+    {"id": "ECT", "path": "Engine.Generic", "fmt": { "len": 8, "max": 215, "min": -40, "add": -40, "unit": "celsius" }, "name": "Engine coolant temperature", "suggestedMetric": "engineCoolantTemperature"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "0B"}, "freq": 0.5,
+  "signals": [
+    {"id": "MAP", "path": "Engine.Generic", "fmt": { "len": 8, "max": 255, "unit": "kilopascal" }, "name": "Intake manifold absolute pressure"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "0F"}, "freq": 0.5,
+  "signals": [
+    {"id": "IAT", "path": "Engine.Generic", "fmt": { "len": 8, "max": 215, "min": -40, "add": -40, "unit": "celsius" }, "name": "Intake air temperature"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "10"}, "freq": 0.25,
+  "signals": [
+    {"id": "MAF", "path": "Engine.Generic", "fmt": { "len": 16, "max": 655.35, "div": 100, "unit": "gramsPerSecond" }, "name": "Air flow rate from mass air flow sensor", "suggestedMetric": "massAirFlow"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "04"}, "freq": 0.25,
+  "signals": [
+    {"id": "LOAD_PCT", "path": "Engine.Generic", "fmt": { "len": 8, "max": 100, "mul": 100, "div": 255, "unit": "percent" }, "name": "Calculated engine load", "suggestedMetric": "engineLoad"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "11"}, "freq": 0.25,
+  "signals": [
+    {"id": "TP", "path": "Control.Generic", "fmt": { "len": 8, "max": 100, "mul": 100, "div": 255, "unit": "percent" }, "name": "Absolute throttle position", "suggestedMetric": "throttlePosition"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"01": "0D"}, "freq": 0.25,
+  "signals": [
+    {"id": "VSS", "path": "Movement.Generic", "fmt": { "len": 8, "max": 255, "nullmax": 255, "unit": "kilometersPerHour" }, "name": "Vehicle speed", "suggestedMetric": "speed"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "03DC"}, "freq": 0.5,
+  "signals": [
+    {"id": "KUGA_FRPD", "path": "Fuel", "fmt": { "len": 16, "min": 0, "max": 250000, "mul": 10, "unit": "kilopascals" }, "name": "Fuel rail pressure desired", "description": "FRPD desired counterpart to FRP. Handler: u16 = u16_at_0x4000B690 * 10 BE."}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "03DF"}, "freq": 0.25,
+  "signals": [
+    {"id": "KUGA_VGT_BSTPA_PCT", "path": "Engine", "fmt": { "len": 16, "min": 0, "max": 100, "mul": 100, "div": 65535, "unit": "percent" }, "name": "VGT/boost actuator command (%)", "description": "Physical % = raw_u16 * 100 / 65535. R3.1 indirect witness — actuator response to boost demand."}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "0401"}, "freq": 0.5,
+  "signals": [
+    {"id": "KUGA_VAR_NOZ_POS", "path": "Engine", "fmt": { "len": 16, "min": 0, "max": 5, "div": 1024, "unit": "volts" }, "name": "Variable nozzle (VGT vane) position voltage", "description": "Handler: u16 = 10-bit_ADC_at_0x4000D3A4 * 5000 / 1024."}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "1E00"}, "freq": 0.25,
+  "signals": [
+    {"id": "KUGA_INDICATED_TQ", "path": "Engine", "fmt": { "len": 16, "sign": true, "min": -200, "max": 800, "div": 10, "unit": "newtonMeters" }, "name": "Indicated engine torque (PI-filtered)", "description": "Handler: output = i16_at_0x4000C030 * 10 / 16. Internal SRAM clamp [-1600..8160] = displayed [-100..510 Nm].", "suggestedMetric": "engineTorque"}
+  ]},
+{ "hdr": "7E0", "rax": "7E8", "cmd": {"22": "F434"}, "freq": 0.5,
+  "signals": [
+    {"id": "KUGA_WRAF_LAMBDA_RAW", "path": "Engine.Generic.OxygenSensors", "fmt": { "len": 16, "bix": 0, "min": 0, "max": 65520, "unit": "scalar" }, "name": "WRAF lambda estimate (raw u16)", "description": "Wide-Range Air-Fuel sensor lambda. Handler: u16 = (u16_at_0x40012F76 clamped 0..0xFFF) << 4. KUGA_O2S11_CUR_mA dropped v3.5.7.2 (probe diagnostic, not combustion)."}
+  ]}
+]
+}
