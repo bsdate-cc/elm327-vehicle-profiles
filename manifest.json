@@ -6,7 +6,7 @@
       "label": "Ford Kuga (DCM3.5 diesel)",
       "signalsetVersion": "v3",
       "minAppSchema": 1,
-      "revision": "0f2928ce5bec",
+      "revision": "48a167829fa8",
       "files": [
         {
           "role": "base",
@@ -43,6 +43,18 @@
           "path": "cars/Ford-Kuga/signalsets/v3/presets/fuel.json",
           "bytes": 504,
           "sha256": "c3d91fb83645a7406e861721b1a68e4cebc1c03525609708115419a13ce4cd04"
+        },
+        {
+          "role": "preset-shift_hole",
+          "path": "cars/Ford-Kuga/signalsets/v3/presets/shift_hole.json",
+          "bytes": 195,
+          "sha256": "8fb8f1b7edce697b04429acfe23055af1ca2b3bc95a9bc6cf94f3cb75b476087"
+        },
+        {
+          "role": "preset-tq_chain",
+          "path": "cars/Ford-Kuga/signalsets/v3/presets/tq_chain.json",
+          "bytes": 264,
+          "sha256": "8434c547387ade72a2b5e93abcee76b28b636a11196c769e15880470c8f13d03"
         },
         {
           "role": "preset-turbo",

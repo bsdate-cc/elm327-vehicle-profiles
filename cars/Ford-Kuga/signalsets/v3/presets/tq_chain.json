@@ -1,0 +1,14 @@
+{
+  "label": "Тракт момента: модель vs физика",
+  "signals": [
+    "RPM",
+    "VSS",
+    "KUGA_INDICATED_TQ",
+    "KUGA_CET_NM",
+    "TP",
+    "KUGA_SMOKE_TQ_SUM",
+    "KUGA_SMOKE_TQ_MAP",
+    "KUGA_TQ_GATE_IN",
+    "KUGA_TQ_GATE_OK"
+  ]
+}

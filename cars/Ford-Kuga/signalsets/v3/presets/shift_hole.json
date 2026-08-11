@@ -1,0 +1,11 @@
+{
+  "label": "Провал тяги при переключении",
+  "signals": [
+    "RPM",
+    "VSS",
+    "KUGA_INDICATED_TQ",
+    "TP",
+    "KUGA_MAIN_PULSE",
+    "KUGA_GEAR_ENGAGED"
+  ]
+}
