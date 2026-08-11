@@ -65,6 +65,7 @@
       ]
     },
     {
+      "_comment": "MISNAMED, kept only because the id is referenced by saved picks: 40016760 is NOT a boost demand. Decompile makes it the cross-fade/sequencing state of FUN_00031968, and log_20260811_073509 confirms it: 92 distinct values, an almost uniform 1..90 walk plus the -32768 not-ready sentinel — nothing pressure-shaped. Do not put it in a boost preset; VGT_DMND_FINAL / VGT_PRECLAMP / VGT_RAW_SURFACE are the demand chain.",
       "id": "R3_VGT_SMOOTHED",
       "hdr": "7E0",
       "rax": "7E8",
@@ -77,7 +78,7 @@
         {
           "id": "KUGA_R3_VGT_SMOOTHED",
           "path": "Engine",
-          "name": "VGT post-smoother demand (R3.1 active patch witness — restored v3.5.7)",
+          "name": "VGT smoother cross-fade state (1..90 counter, -32768 = not ready) — NOT a demand",
           "fmt": {
             "len": 16,
             "sign": true,
@@ -662,6 +663,30 @@
             "len": 16,
             "sign": true,
             "unit": "scalar"
+          }
+        }
+      ]
+    },
+    {
+      "_comment": "THE boost setpoint. FUN_0007ebc8 clamps the blended demand into 400166AE (VGT_PRECLAMP), then stores FUN_0007eb24(...) here — and FUN_0007d87c reads THIS on its way into the VGT control chain. In this calibration FUN_0007eb24 is near pass-through (its added map at descriptor 0x1C80C4 is all zeros, its 0xE00 = 350 kPa ceiling never binds), which is an observation about this cal, not a guarantee — hence its own probe.",
+      "id": "VGT_DMND_FINAL",
+      "hdr": "7E0",
+      "rax": "7E8",
+      "address": "400165C8",
+      "size": 2,
+      "session": "extended_3",
+      "mode": "kuga_ext",
+      "freq": 1.0,
+      "signals": [
+        {
+          "id": "KUGA_VGT_DMND_FINAL",
+          "path": "Engine.VGT",
+          "name": "Final VGT boost setpoint (post-clamp, what the control chain consumes)",
+          "fmt": {
+            "len": 16,
+            "sign": true,
+            "mul": 0.09765625,
+            "unit": "kilopascals"
           }
         }
       ]

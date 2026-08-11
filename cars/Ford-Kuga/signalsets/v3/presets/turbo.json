@@ -1,13 +1,25 @@
 {
-  "label": "Турбина",
+  "label": "Наддув: запрос против факта",
   "signals": [
     "RPM",
-    "LOAD_PCT",
+    "VSS",
+    "TP",
     "MAP",
-    "IAT",
     "MAF",
+    "IAT",
+    "KUGA_BAT_V",
+    "KUGA_INDICATED_TQ",
     "KUGA_VGT_BSTPA_PCT",
     "KUGA_VAR_NOZ_POS",
-    "KUGA_R3_VGT_SMOOTHED"
+    "KUGA_VGT_DMND_FINAL",
+    "KUGA_VGT_PRECLAMP",
+    "KUGA_VGT_RAW_SURFACE",
+    "KUGA_DISPATCH_MODE",
+    "KUGA_CONF_SEL",
+    "KUGA_GEAR_ENGAGED",
+    "KUGA_SMOKE_TQ_SUM",
+    "KUGA_SMOKE_TQ_MAP",
+    "KUGA_SMOKE_Y_AIR",
+    "KUGA_EGR_POS_MEAS"
   ]
 }

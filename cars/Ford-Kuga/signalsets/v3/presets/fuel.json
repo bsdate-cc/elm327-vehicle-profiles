@@ -1,15 +1,25 @@
 {
-  "label": "Топливная",
+  "label": "Топливная: рампа и впрыск",
   "signals": [
     "RPM",
+    "VSS",
+    "TP",
+    "MAP",
+    "MAF",
+    "ECT",
+    "KUGA_BAT_V",
     "KUGA_FRP",
     "KUGA_FRPD",
-    "KUGA_R1_FQD_DEMAND",
+    "KUGA_FRPD_FINAL",
+    "KUGA_FRPD_PRE_CLAMP",
+    "KUGA_FRPD_MODE_IDX",
+    "KUGA_FRPD_MODE_BLEND",
+    "KUGA_FRPD_NOM1_VAR",
     "KUGA_MAIN_PULSE",
     "KUGA_PILOT1_MASS",
-    "KUGA_INJ_BAL_C1",
-    "KUGA_INJ_BAL_C2",
-    "KUGA_INJ_BAL_C3",
-    "KUGA_INJ_BAL_C4"
+    "KUGA_R1_FQD_DEMAND",
+    "KUGA_R3_2_MAIN_DEMAND",
+    "KUGA_CONF_SEL",
+    "KUGA_NOM1_BLEND_IDX"
   ]
 }

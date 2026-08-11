@@ -1,0 +1,21 @@
+{
+  "label": "Баланс форсунок (LRR)",
+  "signals": [
+    "RPM",
+    "VSS",
+    "TP",
+    "MAP",
+    "MAF",
+    "ECT",
+    "KUGA_BAT_V",
+    "KUGA_FRP",
+    "KUGA_INDICATED_TQ",
+    "KUGA_INJ_BAL_C1",
+    "KUGA_INJ_BAL_C2",
+    "KUGA_INJ_BAL_C3",
+    "KUGA_INJ_BAL_C4",
+    "KUGA_MAIN_PULSE",
+    "KUGA_PILOT1_MASS",
+    "KUGA_GEAR_ENGAGED"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "label": "EGR: гейт по моменту и прогрев",
+  "signals": [
+    "RPM",
+    "VSS",
+    "TP",
+    "MAP",
+    "MAF",
+    "ECT",
+    "IAT",
+    "KUGA_BAT_V",
+    "KUGA_INDICATED_TQ",
+    "KUGA_TQ_GATE_IN",
+    "KUGA_TQ_GATE_OK",
+    "KUGA_EGR_MASTER",
+    "KUGA_EGR_MODE_IDX",
+    "KUGA_EGR_CMD",
+    "KUGA_EGR_POS_TGT",
+    "KUGA_EGR_POS_MEAS",
+    "KUGA_AMF_DEMAND_FINAL",
+    "KUGA_AMF_MEASURED",
+    "KUGA_SMOKE_TQ_SUM",
+    "KUGA_SMOKE_TQ_MAP",
+    "KUGA_SMOKE_Y_AIR",
+    "KUGA_IDLE_RPM_TGT"
+  ]
+}

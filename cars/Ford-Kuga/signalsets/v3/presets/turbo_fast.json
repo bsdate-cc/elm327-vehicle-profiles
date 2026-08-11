@@ -1,0 +1,16 @@
+{
+  "label": "Наддув: быстрый срез",
+  "signals": [
+    "RPM",
+    "VSS",
+    "TP",
+    "MAP",
+    "MAF",
+    "IAT",
+    "KUGA_INDICATED_TQ",
+    "KUGA_VGT_DMND_FINAL",
+    "KUGA_VGT_BSTPA_PCT",
+    "KUGA_SMOKE_TQ_MAP",
+    "KUGA_SMOKE_TQ_SUM"
+  ]
+}
