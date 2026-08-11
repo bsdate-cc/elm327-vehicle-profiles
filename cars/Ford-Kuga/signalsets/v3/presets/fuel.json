@@ -1,0 +1,15 @@
+{
+  "label": "Топливная",
+  "signals": [
+    "RPM",
+    "KUGA_FRP",
+    "KUGA_FRPD",
+    "KUGA_R1_FQD_DEMAND",
+    "KUGA_MAIN_PULSE",
+    "KUGA_PILOT1_MASS",
+    "KUGA_INJ_BAL_C1",
+    "KUGA_INJ_BAL_C2",
+    "KUGA_INJ_BAL_C3",
+    "KUGA_INJ_BAL_C4"
+  ]
+}

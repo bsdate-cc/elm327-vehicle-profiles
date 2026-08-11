@@ -68,6 +68,27 @@ def collect_profile(car_dir: Path) -> dict | None:
                 "sha256": sha256(path),
             }
         )
+
+    # One preset file = one named signal set; the role carries the id because
+    # the app stores committed bytes keyed by role, first-wins on repeats.
+    for path in sorted((version_dir / "presets").glob("*.json")):
+        preset = json.loads(path.read_text(encoding="utf-8"))
+        # Same publish-time gate as the profile files: a preset the app would
+        # reject must fail here, not on a phone in a garage.
+        if not str(preset.get("label", "")).strip():
+            raise SystemExit(f"{path}: preset label is missing or blank")
+        signals = preset.get("signals", [])
+        if not isinstance(signals, list) or not [s for s in signals if str(s).strip()]:
+            raise SystemExit(f"{path}: preset signals are missing or empty")
+        files.append(
+            {
+                "role": f"preset-{path.stem}",
+                "path": path.relative_to(ROOT).as_posix(),
+                "bytes": path.stat().st_size,
+                "sha256": sha256(path),
+            }
+        )
+
     if not files:
         return None
 

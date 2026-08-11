@@ -6,7 +6,7 @@
       "label": "Ford Kuga (DCM3.5 diesel)",
       "signalsetVersion": "v3",
       "minAppSchema": 1,
-      "revision": "9c506410669d",
+      "revision": "badac4ee13dc",
       "files": [
         {
           "role": "base",
@@ -19,6 +19,18 @@
           "path": "cars/Ford-Kuga/signalsets/v3/extensions.json",
           "bytes": 35869,
           "sha256": "1cb4fac3ec65e0a93b4632c6cb6d66a622b988e1590b826a79bfc9d68029c555"
+        },
+        {
+          "role": "preset-fuel",
+          "path": "cars/Ford-Kuga/signalsets/v3/presets/fuel.json",
+          "bytes": 264,
+          "sha256": "8ac4da0f8941b3f0d541f05edf018d074a2e0c1b5a055f452b4c7d470d330e38"
+        },
+        {
+          "role": "preset-turbo",
+          "path": "cars/Ford-Kuga/signalsets/v3/presets/turbo.json",
+          "bytes": 189,
+          "sha256": "e5209aeb8ffa69dfdd985c025d63ebf3d4a5013fa8f400fefa2cf4db59dd18cb"
         }
       ]
     }

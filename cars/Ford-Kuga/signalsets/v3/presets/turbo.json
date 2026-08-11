@@ -1,0 +1,13 @@
+{
+  "label": "Турбина",
+  "signals": [
+    "RPM",
+    "LOAD_PCT",
+    "MAP",
+    "IAT",
+    "MAF",
+    "KUGA_VGT_BSTPA_PCT",
+    "KUGA_VAR_NOZ_POS",
+    "KUGA_R3_VGT_SMOOTHED"
+  ]
+}
